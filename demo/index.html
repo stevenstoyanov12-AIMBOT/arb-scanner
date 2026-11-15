@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fight Night Arb Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: one white screen, the fixture centered both ways */
+  color-scheme: light;
+  --bg:#ffffff; --text:#11161d; --muted:#6b7684; --line:#e3e7ec; --accent:#11161d;
+  --home:#c9a227; --away-a:#a3123f; --away-b:#1d4f9c;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
+html{display:flex}
+body{flex:1}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.45;
+  display:flex;align-items:center;justify-content:center;padding:24px 16px}
+main{width:100%;max-width:860px;display:flex;flex-direction:column;align-items:center;gap:28px;text-align:center}
+.score{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:clamp(12px,4vw,40px)}
+.team{display:flex;flex-direction:column;align-items:center;gap:14px}
+.mark{width:clamp(84px,18vw,140px);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:800;font-size:clamp(26px,5.5vw,44px);letter-spacing:.03em}
+.mark.h{background:#c8262f;color:#fff}
+.mark.a{background:#1d4f9c;color:#fff}
+.odds{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:4px;font-family:var(--mono);font-size:13px;min-width:132px}
+.odds li{display:flex;justify-content:space-between;gap:10px;padding:4px 8px;border:1px solid var(--line);border-radius:5px}
+.odds .p{color:var(--muted)}
+.odds .v{font-weight:600;font-variant-numeric:tabular-nums}
+.odds .ar{display:inline-block;width:10px;font-size:10px;margin-left:3px}
+.odds .up .ar{color:#1a9c5b} .odds .dn .ar{color:#d43a55}
+.cap{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.score{align-items:end}
+.result{font-family:var(--display);font-weight:800;font-size:clamp(18px,3vw,26px);text-transform:uppercase;min-height:1.2em}
+@media(max-width:520px){.odds{min-width:0;font-size:11px}.odds li{padding:3px 5px;gap:4px}}
+.how{width:100%;display:flex;flex-direction:column;gap:22px;align-items:center;margin-top:8px}
+.how h2{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+.txt{max-width:64ch;text-align:left;font-size:18px;line-height:1.55}
+.txt p{margin:0 0 16px}
+.now{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:8px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:8px;font-family:var(--mono);font-size:13px}
+.now dt{color:var(--muted)} .now dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
+.now .hit{color:#1a9c5b}
+@media(max-width:520px){.txt{font-size:16px}.now{grid-template-columns:1fr;gap:2px}.now dd{margin-bottom:8px}}
+.name{font-family:var(--display);font-weight:800;font-size:clamp(20px,4vw,34px);text-transform:uppercase;line-height:1}
+.goals{font-family:var(--display);font-weight:800;font-size:clamp(40px,9vw,84px);line-height:.9;font-variant-numeric:tabular-nums;white-space:nowrap}
+.clock{font-family:var(--mono);font-size:14px;color:var(--muted);margin-top:8px}
+.ticker{font-family:var(--mono);font-size:13px;color:var(--muted);min-height:1.4em}
+.ticker b{color:var(--text)}
+.ctrl{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button{font:inherit;cursor:pointer}
+.btn{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 20px;font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--away-b);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <div class="score">
+    <div class="team"><div><div class="cap">McGregor wins</div><ul class="odds" id="o0"></ul></div><div class="mark h">CM</div><div class="name">Conor McGregor</div></div>
+    <div><div class="goals">VS</div><div class="clock" id="clock">PRE-FIGHT</div></div>
+    <div class="team"><div><div class="cap">Poirier wins</div><ul class="odds" id="o1"></ul></div><div class="mark a">DP</div><div class="name">Dustin Poirier</div></div>
+  </div>
+  <div class="result" id="result"></div>
+  <div class="ticker" id="ticker">Simulated fight and odds. Five rounds run in about 2 minutes.</div>
+  <div class="ctrl">
+    <button class="btn primary" id="play">Start fight</button>
+    <button class="btn" id="reset">Restart</button>
+  </div>
+  <section class="how">
+    <h2>How the scanner worked · built Feb 2026</h2>
+    <div class="txt">
+      <p>Sites price the same fight differently. When one site pays a higher coefficient on McGregor and another pays a higher one on Poirier, the scanner bets both fighters, each at the site that pays more. If the two prices are far enough apart to cover the fees, the winning bet pays more than both bets cost, so it profits whoever wins.</p>
+      <p>It is an arb when the two best prices' implied chances total under 100%, which means 1/odds1 + 1/odds2 is below 1. One site alone always totals over 100%. That is its margin. It only works on win-or-lose sports: two outcomes and no draw, so two bets cover every result.</p>
+      <p>On every scan the bot pulls the odds from every platform's API, matches the same event across them by fuzzy name matching, and takes the best price on each fighter. Then it works out gross = (1 − 1/odds1 − 1/odds2) × 100 and net = gross − platform fees. If net is 1% or more, it sends a Telegram alert. Stakes are sized so both bets pay out the same: stake = total × (1/odds) ÷ (1/odds1 + 1/odds2).</p>
+      <p>At the start of 2026 these opportunities were a gold mine on inefficient books. By June they were gone.</p>
+      <dl class="now">
+        <dt>Best prices now</dt><dd id="c3"></dd>
+        <dt>Implied total</dt><dd id="c8"></dd>
+        <dt>Gross</dt><dd id="c4"></dd>
+        <dt>Net after fees</dt><dd id="c5"></dd>
+        <dt>€100 split</dt><dd id="c7"></dd>
+        <dt>Telegram</dt><dd id="c6"></dd>
+      </dl>
+    </div>
+  </section>
+</main>
+<script>
+(function(){
+"use strict";
+var TICK_MS=400, SEC_PER_TICK=5, FIGHT_SEC=1500, SIGMA=.004;
+var PLAT=[{name:"Pinnacle",m:1.02,speed:.4,fee:2},{name:"Kalshi",m:1.02,speed:.35,fee:0},{name:"SX Bet",m:1.025,speed:.3,fee:.25},
+          {name:"Azuro",m:1.05,speed:.2,fee:3},{name:"Overtime",m:1.045,speed:.22,fee:2.5}];
+var NAMES=["McGregor","Poirier"];
+var $=function(id){return document.getElementById(id);};
+var S, q=null, prev={};
+function gauss(){return (Math.random()+Math.random()+Math.random()-1.5)*2;}
+function cl(x){return Math.max(.04,Math.min(.96,x));}
+function fresh(){S={t:0,p:.46,running:false,done:false};q=null;prev={};}
+function buildOdds(){
+  for(var o=0;o<2;o++){var ul=$("o"+o);ul.innerHTML="";
+    PLAT.forEach(function(pl,i){var li=document.createElement("li");li.id="q"+i+o;
+      li.innerHTML='<span class="p"></span><span><span class="v"></span><span class="ar"></span></span>';
+      li.firstChild.textContent=pl.name;ul.appendChild(li);});}
+}
+function moveOdds(){
+  if(!q)q=PLAT.map(function(){return S.p+gauss()*.005;});
+  PLAT.forEach(function(pl,i){
+    q[i]+=(S.p-q[i])*pl.speed+gauss()*SIGMA;
+    var pr=[q[i],1-q[i]];
+    for(var o=0;o<2;o++){
+      var od=1/(cl(pr[o])*pl.m),k=i+"-"+o,li=$("q"+i+o),was=prev[k];
+      var dir=was===undefined||Math.abs(od-was)<.005?"":(od>was?"up":"dn");
+      li.className=dir;li.querySelector(".v").textContent=od.toFixed(2);
+      li.querySelector(".ar").textContent=dir==="up"?"\u25B2":(dir==="dn"?"\u25BC":"");
+      prev[k]=od;
+    }
+  });
+  updateClouds();
+}
+// same maths as the Python scanner: two outcomes, best price on each
+function updateClouds(){
+  var best=[],sum=0,fees=0;
+  for(var o=0;o<2;o++){var b=0;for(var i=1;i<PLAT.length;i++)if(prev[i+"-"+o]>prev[b+"-"+o])b=i;
+    best.push(b);sum+=1/prev[b+"-"+o];fees+=PLAT[b].fee;}
+  var gross=(1-sum)*100,net=gross-fees;
+  $("c3").textContent=best.map(function(b,o){return NAMES[o]+" "+prev[b+"-"+o].toFixed(2)+" "+PLAT[b].name;}).join(" · ");
+  $("c4").textContent="(1 − "+sum.toFixed(4)+") × 100 = "+gross.toFixed(2)+"%";
+  $("c5").textContent=gross.toFixed(2)+"% − "+fees.toFixed(2)+"% = "+net.toFixed(2)+"%";
+  $("c6").textContent=net>=1?"ALERT sent · "+net.toFixed(2)+"% net":"No alert · "+net.toFixed(2)+"% net";
+  var s0=100*(1/prev[best[0]+"-0"])/sum;
+  $("c7").textContent="€100 → "+NAMES[0]+" €"+s0.toFixed(2)+" · "+NAMES[1]+" €"+(100-s0).toFixed(2)+" · pays €"+(100/sum).toFixed(2)+" either way";
+  var i0=100/prev[best[0]+"-0"],i1=100/prev[best[1]+"-1"];
+  $("c8").textContent=i0.toFixed(1)+"% + "+i1.toFixed(1)+"% = "+(i0+i1).toFixed(1)+"% · "+(sum<1?"arb before fees":"no arb");
+  $("c8").className=(sum<1?"hit":"");
+  $("c6").className=(net>=1?"hit":"");
+}
+function clockText(){
+  if(S.done)return "FIGHT OVER";
+  if(S.t===0&&!S.running)return "PRE-FIGHT";
+  var r=Math.min(5,Math.floor(S.t/300)+1),e=S.t-(r-1)*300,m=Math.floor(e/60),s=e%60;
+  return "ROUND "+r+" · "+m+":"+(s<10?"0":"")+s;
+}
+function render(){
+  $("clock").textContent=clockText();
+  $("play").textContent=S.running?"Pause":(S.t===0?"Start fight":"Resume");
+  $("play").disabled=S.done;
+}
+function end(method){
+  var w=Math.random()<S.p?0:1;
+  S.done=true;S.running=false;
+  $("result").textContent=NAMES[w]+" wins by "+method+" (simulated)";
+  $("ticker").textContent="Markets closed.";
+}
+function tick(){
+  if(S.done)return;
+  if(!S.running){moveOdds();return;}
+  S.t+=SEC_PER_TICK;
+  S.p=cl(S.p+gauss()*.012);
+  if(Math.random()<.02){
+    var who=Math.random()<S.p?0:1;
+    S.p=cl(S.p+(who===0?1:-1)*(.08+Math.random()*.08));
+    $("ticker").innerHTML="<b>Big shot lands for "+NAMES[who]+".</b> Platforms reprice at different speeds.";
+  }
+  if(S.t>=FIGHT_SEC)end("decision");
+  else if(Math.random()<.002)end(Math.random()<.7?"knockout in round "+(Math.floor(S.t/300)+1):"submission in round "+(Math.floor(S.t/300)+1));
+  if(!S.done)moveOdds();
+  render();
+}
+function toggle(){
+  if(S.done)return;
+  S.running=!S.running;
+  if(S.running&&S.t===0)$("ticker").textContent="Round 1.";
+  render();
+}
+function reset(){
+  fresh();moveOdds();
+  $("result").textContent="";
+  $("ticker").textContent="Simulated fight and odds. Five rounds run in about 2 minutes.";
+  render();
+}
+fresh();buildOdds();moveOdds();render();setInterval(tick,TICK_MS);
+$("play").addEventListener("click",toggle);
+$("reset").addEventListener("click",reset);
+})();
+</script>
+</body>
+</html>
