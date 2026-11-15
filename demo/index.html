@@ -84,7 +84,7 @@ button:focus-visible{outline:2px solid var(--away-b);outline-offset:2px}
     <div class="txt">
       <p>Sites price the same fight differently. When one site pays a higher coefficient on McGregor and another pays a higher one on Poirier, the scanner bets both fighters, each at the site that pays more. If the two prices are far enough apart to cover the fees, the winning bet pays more than both bets cost, so it profits whoever wins.</p>
       <p>It is an arb when the two best prices' implied chances total under 100%, which means 1/odds1 + 1/odds2 is below 1. One site alone always totals over 100%. That is its margin. It only works on win-or-lose sports: two outcomes and no draw, so two bets cover every result.</p>
-      <p>On every scan the bot pulls the odds from every platform's API, matches the same event across them by fuzzy name matching, and takes the best price on each fighter. Then it works out gross = (1 − 1/odds1 − 1/odds2) × 100 and net = gross − platform fees. If net is 3% or more, it sends a Telegram alert. The bar is 3% so the edge survives fees and price moves between the two bets. Stakes are sized so both bets pay out the same: stake = total × (1/odds) ÷ (1/odds1 + 1/odds2).</p>
+      <p>On every scan the bot pulls the odds from every platform's API, matches the same event across them by fuzzy name matching, and takes the best price on each fighter. Then it works out gross = (1 − 1/odds1 − 1/odds2) × 100 and net = gross − platform fees. If net is 0.5% or more after fees, it sends a Telegram alert. Stakes are sized so both bets pay out the same: stake = total × (1/odds) ÷ (1/odds1 + 1/odds2).</p>
       <p>At the start of 2026 these opportunities were a gold mine on inefficient books. By June they were gone.</p>
       <dl class="now">
         <dt>Best prices now</dt><dd id="c3"></dd>
@@ -139,13 +139,13 @@ function updateClouds(){
   $("c3").textContent=best.map(function(b,o){return NAMES[o]+" "+prev[b+"-"+o].toFixed(2)+" "+PLAT[b].name;}).join(" · ");
   $("c4").textContent="(1 − "+sum.toFixed(4)+") × 100 = "+gross.toFixed(2)+"%";
   $("c5").textContent=gross.toFixed(2)+"% − "+fees.toFixed(2)+"% = "+net.toFixed(2)+"%";
-  $("c6").textContent=net>=3?"ALERT sent · "+net.toFixed(2)+"% net":"No alert · "+net.toFixed(2)+"% net";
+  $("c6").textContent=net>=0.5?"ALERT sent · "+net.toFixed(2)+"% net":"No alert · "+net.toFixed(2)+"% net";
   var s0=100*(1/prev[best[0]+"-0"])/sum;
   $("c7").textContent="€100 → "+NAMES[0]+" €"+s0.toFixed(2)+" · "+NAMES[1]+" €"+(100-s0).toFixed(2)+" · pays €"+(100/sum).toFixed(2)+" either way";
   var i0=100/prev[best[0]+"-0"],i1=100/prev[best[1]+"-1"];
   $("c8").textContent=i0.toFixed(1)+"% + "+i1.toFixed(1)+"% = "+(i0+i1).toFixed(1)+"% · "+(sum<1?"arb before fees":"no arb");
   $("c8").className=(sum<1?"hit":"");
-  $("c6").className=(net>=3?"hit":"");
+  $("c6").className=(net>=0.5?"hit":"");
 }
 function clockText(){
   if(S.done)return "FIGHT OVER";

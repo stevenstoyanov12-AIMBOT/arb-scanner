@@ -89,7 +89,7 @@ python scanner.py --scan
 python scanner.py --loop
 
 # Custom interval and min profit
-python scanner.py --loop --interval 30 --min-profit 5.0
+python scanner.py --loop --interval 30 --min-profit 2.0
 ```
 
 ## How It Works
@@ -99,7 +99,7 @@ python scanner.py --loop --interval 30 --min-profit 5.0
 3. For each matching event, checks opposite outcomes
 4. Calculates: `gross_arb = (1 - 1/odds1 - 1/odds2) * 100`
 5. Subtracts platform fees: `net_arb = gross_arb - fee1 - fee2`
-6. Alerts via Telegram if net_arb is at or above the threshold (3% by default)
+6. Alerts via Telegram if net_arb is at or above the threshold (0.5% after fees by default)
 
 ## Best Arb Combinations
 

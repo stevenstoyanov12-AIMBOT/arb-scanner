@@ -25,7 +25,7 @@ TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 THE_ODDS_API_KEY = os.environ.get("THE_ODDS_API_KEY", "")
 
 # Minimum net profit after fees to alert (percent)
-MIN_NET_PROFIT_PERCENT = 3.0
+MIN_NET_PROFIT_PERCENT = 0.5
 
 # Platform fees (percent)
 PLATFORM_FEES = {
@@ -968,7 +968,7 @@ if __name__ == "__main__":
     parser.add_argument('--scan', action='store_true', help='Single scan')
     parser.add_argument('--loop', action='store_true', help='Continuous scanning')
     parser.add_argument('--interval', type=int, default=60, help='Scan interval in seconds')
-    parser.add_argument('--min-profit', type=float, default=3.0, help='Minimum net profit %')
+    parser.add_argument('--min-profit', type=float, default=0.5, help='Minimum net profit %')
     
     args = parser.parse_args()
     
