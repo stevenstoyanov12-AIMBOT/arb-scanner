@@ -4,6 +4,8 @@ Scans prediction markets and sports betting platforms for arbitrage opportunitie
 
 ## Demo
 
+**Live demo:** https://stevenstoyanov12-aimbot.github.io/arb-scanner/demo/
+
 `demo/index.html` is a small browser demo of the logic. It simulates a two-outcome fight with odds on five platforms and shows the scanner's steps live: best prices, implied total, gross and net edge, stake split and whether an alert would fire. The odds in the demo are simulated.
 
 ## Platforms
